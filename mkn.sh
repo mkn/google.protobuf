@@ -4,18 +4,22 @@ set -e
 
 CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-[ -z "$(which cmake)" ] && echo "cmake is required to build singa" && exit 1;
-[ -z "$(which mkn)" ]   && echo "mkn is required to build singa" && exit 1;
-
+THREADS="$(nproc --all)"
 VERSION="master"
-if [ ! -d "./protobuf" ]; then
-    git clone --depth 1 https://github.com/google/protobuf -b $VERSION protobuf --recursive
-    pushd protobuf
-    ./autogen.sh
-    ./configure --prefix=$CWD/inst
-    make -J$THREADS
-    make install
-fi
+GIT_URL="https://github.com/google/protobuf"
+DIR="protobuf"
+
+HAS=1
+[ ! -d "./$DIR" ] && HAS=0 && git clone $GIT_URL --depth 1 -b $VERSION $DIR --recursive
+[ $HAS -eq 1 ] && cd $DIR && git pull origin $VERSION && cd ..
+
+pushd $DIR
+./autogen.sh
+./configure --prefix=$CWD/inst
+make clean
+make -j$THREADS
+make install
+popd
 
 echo "finished"
 exit 0
