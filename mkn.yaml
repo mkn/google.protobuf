@@ -1,0 +1,22 @@
+
+
+name: org.boost
+
+parent: lib
+
+profile:
+  - name: cmn
+    inc:  ./inst/include
+    path: ./inst/lib
+
+  - name: lib
+    parent: cmn
+    lib: protobuf
+
+  - name: lite
+    parent: cmn
+    lib: protobuf-lite
+
+  - name: protoc
+    parent: cmn
+    lib: protoc
